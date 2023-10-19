@@ -14,50 +14,14 @@ module "efs" {
   bypass_policy_lockout_safety_check = false
 
   # Mount targets / security group
-  mount_targets = {
-    "eu-west-1a" = {
-      subnet_id = "subnet-abcde012"
-    }
-    "eu-west-1b" = {
-      subnet_id = "subnet-bcde012a"
-    }
-    "eu-west-1c" = {
-      subnet_id = "subnet-fghi345a"
-    }
-  }
-  security_group_description = "Example EFS security group"
-  security_group_vpc_id      = "vpc-1234556abcdef"
+  mount_targets = { for subnet_id in module.vpc.private_subnets : local.region => { subnet_id = subnet_id } }
+  security_group_description = "EFS SG for ${random_id.rando.hex}"
+  security_group_vpc_id      = module.vpc.vpc_id
   security_group_rules = {
     vpc = {
       # relying on the defaults provdied for EFS/NFS (2049/TCP + ingress)
       description = "NFS ingress from VPC private subnets"
-      cidr_blocks = ["10.99.3.0/24", "10.99.4.0/24", "10.99.5.0/24"]
-    }
-  }
-
-  # Access point(s)
-  access_points = {
-    posix_example = {
-      name = "posix-example"
-      posix_user = {
-        gid            = 1001
-        uid            = 1001
-        secondary_gids = [1002]
-      }
-
-      tags = {
-        Additionl = "yes"
-      }
-    }
-    root_example = {
-      root_directory = {
-        path = "/example"
-        creation_info = {
-          owner_gid   = 1001
-          owner_uid   = 1001
-          permissions = "755"
-        }
-      }
+      cidr_blocks = [module.vpc.vpc_cidr_block]
     }
   }
 
