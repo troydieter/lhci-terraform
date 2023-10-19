@@ -63,6 +63,16 @@ module "ecs_service" {
 
   cpu    = 512
   memory = 1024
+  volume = {
+    data-vol = {
+      efs_volume_configuration = {
+        file_system_id     = module.efs.id
+        root_directory     = ""
+        transit_encryption = "DISABLED"
+      }
+    }
+  }
+
 
   # Container definition(s)
   container_definitions = {
@@ -72,6 +82,12 @@ module "ecs_service" {
       memory    = 1024
       essential = true
       image     = "patrickhulce/lhci-server:latest"
+      mount_points = [
+        {
+          sourceVolume  = "data"
+          containerPath = "/data"
+        }
+      ]
       port_mappings = [
         {
           name          = local.container_name
