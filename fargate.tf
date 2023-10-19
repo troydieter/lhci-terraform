@@ -8,7 +8,7 @@ locals {
   region = "us-east-1"
   name   = "lhci-terraform-${random_id.rando.hex}"
 
-  vpc_cidr = "172.16.16.0/23"
+  vpc_cidr = "172.16.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   container_name = "lhci-${random_id.rando.hex}"
@@ -54,9 +54,9 @@ module "ecs_cluster" {
 ################################################################################
 
 module "ecs_service" {
-  source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.2.2"
-  depends_on = [ module.ecs_cluster ]
+  source     = "terraform-aws-modules/ecs/aws//modules/service"
+  version    = "5.2.2"
+  depends_on = [module.ecs_cluster]
 
   name        = local.name
   cluster_arn = module.ecs_cluster.arn

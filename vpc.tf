@@ -12,7 +12,7 @@ module "alb_sg" {
   description = "Service security group"
   vpc_id      = module.vpc.vpc_id
 
-  ingress_rules       = ["http-80-tcp"]
+  ingress_rules       = ["https-443-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
 
   egress_rules       = ["all-all"]
@@ -48,6 +48,17 @@ module "alb" {
       backend_protocol = "HTTP"
       backend_port     = local.container_port
       target_type      = "ip"
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 6
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
     },
   ]
 
