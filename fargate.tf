@@ -84,7 +84,7 @@ module "ecs_service" {
       image     = "patrickhulce/lhci-server:latest"
       mount_points = [
         {
-          sourceVolume  = "data"
+          sourceVolume  = "data-vol"
           containerPath = "/data"
         }
       ]

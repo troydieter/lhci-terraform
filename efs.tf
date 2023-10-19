@@ -14,7 +14,17 @@ module "efs" {
   bypass_policy_lockout_safety_check = false
 
   # Mount targets / security group
-  mount_targets = { for subnet_id in module.vpc.private_subnets : local.region => { subnet_id = subnet_id } }
+    mount_targets = {
+    "${local.region}a" = {
+      subnet_id = module.vpc.private_subnets[0]
+    }
+    "${local.region}b" = {
+      subnet_id = module.vpc.private_subnets[1]
+    }
+    "${local.region}c" = {
+      subnet_id = module.vpc.private_subnets[2]
+    }
+  }
   security_group_description = "EFS SG for ${random_id.rando.hex}"
   security_group_vpc_id      = module.vpc.vpc_id
   security_group_rules = {
