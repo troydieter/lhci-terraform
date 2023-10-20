@@ -6,13 +6,13 @@ resource "random_id" "rando" {
 
 locals {
   region = "us-east-1"
-  name   = "lhci-terraform-${random_id.rando.hex}"
+  name   = "example-${random_id.rando.hex}"
 
   vpc_cidr = "172.16.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  container_name = "lhci-${random_id.rando.hex}"
-  container_port = 9001
+  container_name = "example-${random_id.rando.hex}"
+  container_port = 80
 
   tags = {
     Name       = local.name
@@ -63,15 +63,15 @@ module "ecs_service" {
 
   cpu    = 512
   memory = 1024
-  volume = {
-    data-vol = {
-      efs_volume_configuration = {
-        file_system_id     = module.efs.id
-        root_directory     = ""
-        transit_encryption = "DISABLED"
-      }
-    }
-  }
+  # volume = {
+  #   data-vol = {
+  #     efs_volume_configuration = {
+  #       file_system_id     = module.efs.id
+  #       root_directory     = ""
+  #       transit_encryption = "DISABLED"
+  #     }
+  #   }
+  # }
 
 
   # Container definition(s)
@@ -81,13 +81,13 @@ module "ecs_service" {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = "patrickhulce/lhci-server:latest"
-      mount_points = [
-        {
-          sourceVolume  = "data-vol"
-          containerPath = "/data"
-        }
-      ]
+      image     = "550767824695.dkr.ecr.us-east-1.amazonaws.com/example-ecr:latest"
+      # mount_points = [
+      #   {
+      #     sourceVolume  = "data-vol"
+      #     containerPath = "/data"
+      #   }
+      # ]
       port_mappings = [
         {
           name          = local.container_name

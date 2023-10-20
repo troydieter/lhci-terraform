@@ -33,12 +33,14 @@ module "alb" {
   subnets         = module.vpc.public_subnets
   security_groups = [module.alb_sg.security_group_id]
 
+
   https_listeners = [
     {
       port               = 443
       protocol           = "HTTPS"
       certificate_arn    = module.acm.acm_certificate_arn
       target_group_index = 0
+      ssl_policy         = "ELBSecurityPolicy-TLS13-1-2-2021-06"
     }
   ]
 
