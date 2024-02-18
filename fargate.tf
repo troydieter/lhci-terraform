@@ -50,39 +50,6 @@ module "ecs_cluster" {
 }
 
 ################################################################################
-# Container Definition
-################################################################################
-
-# module "lhcicontainer" {
-#   source                   = "terraform-aws-modules/ecs/aws//modules/container-definition"
-#   version                  = "5.9.0"
-#   name                     = local.name
-#   service                  = local.name
-#   cpu       = 512
-#   memory    = 1024
-#   essential = true
-#   image     = "patrickhulce/lhci-server:latest"
-#   mount_points = [
-#     {
-#       sourceVolume  = "data-vol"
-#       containerPath = "/data"
-#     }
-#   ]
-#   port_mappings = [
-#     {
-#       name          = local.name
-#       containerPort = local.container_port
-#       hostPort      = local.container_port
-#       protocol      = "tcp"
-#     }
-#   ]
-
-#   # Example image used requires access to write to root filesystem
-#   readonly_root_filesystem = false
-#   memory_reservation       = 100
-# }
-
-################################################################################
 # Service
 ################################################################################
 
@@ -105,10 +72,6 @@ module "ecs_service" {
       }
     }
   }
-
-  # container_definitions = {
-  #   (local.name) = jsonencode(module.lhcicontainer.container_definition)
-  # }
 
   container_definitions = {
     "test" = {
