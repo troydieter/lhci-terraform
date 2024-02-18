@@ -122,6 +122,14 @@ module "ecs_service" {
       description              = "Service port"
       source_security_group_id = module.alb_sg.security_group_id
     }
+    alb_ingress_2049 = {
+      type                     = "ingress"
+      from_port                = "2049"
+      to_port                  = "2049"
+      protocol                 = "tcp"
+      description              = "NFS port"
+      cidr_blocks              = [module.vpc.vpc_cidr_block]
+    }
     egress_all = {
       type        = "egress"
       from_port   = 0
