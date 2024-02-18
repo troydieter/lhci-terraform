@@ -53,34 +53,34 @@ module "ecs_cluster" {
 # Container Definition
 ################################################################################
 
-module "lhcicontainer" {
-  source                   = "terraform-aws-modules/ecs/aws//modules/container-definition"
-  version                  = "5.9.0"
-  name                     = local.container_name
-  service                  = local.name
-  cpu       = 512
-  memory    = 1024
-  essential = true
-  image     = "patrickhulce/lhci-server:latest"
-  mount_points = [
-    {
-      sourceVolume  = "data-vol"
-      containerPath = "/data"
-    }
-  ]
-  port_mappings = [
-    {
-      name          = local.container_name
-      containerPort = local.container_port
-      hostPort      = local.container_port
-      protocol      = "tcp"
-    }
-  ]
+# module "lhcicontainer" {
+#   source                   = "terraform-aws-modules/ecs/aws//modules/container-definition"
+#   version                  = "5.9.0"
+#   name                     = local.name
+#   service                  = local.name
+#   cpu       = 512
+#   memory    = 1024
+#   essential = true
+#   image     = "patrickhulce/lhci-server:latest"
+#   mount_points = [
+#     {
+#       sourceVolume  = "data-vol"
+#       containerPath = "/data"
+#     }
+#   ]
+#   port_mappings = [
+#     {
+#       name          = local.name
+#       containerPort = local.container_port
+#       hostPort      = local.container_port
+#       protocol      = "tcp"
+#     }
+#   ]
 
-  # Example image used requires access to write to root filesystem
-  readonly_root_filesystem = false
-  memory_reservation       = 100
-}
+#   # Example image used requires access to write to root filesystem
+#   readonly_root_filesystem = false
+#   memory_reservation       = 100
+# }
 
 ################################################################################
 # Service
@@ -106,14 +106,43 @@ module "ecs_service" {
     }
   }
 
+  # container_definitions = {
+  #   (local.name) = jsonencode(module.lhcicontainer.container_definition)
+  # }
+
   container_definitions = {
-    (local.name) = jsonencode(module.lhcicontainer.container_definition)
+    (local.name) = {
+      name      = local.name
+      service   = local.name
+      cpu       = 512
+      memory    = 1024
+      essential = true
+      image     = "patrickhulce/lhci-server:latest"
+      mount_points = [
+        {
+          sourceVolume  = "data-vol"
+          containerPath = "/data"
+        }
+      ]
+      port_mappings = [
+        {
+          name          = local.name
+          containerPort = local.container_port
+          hostPort      = local.container_port
+          protocol      = "tcp"
+        }
+      ]
+
+      # Example image used requires access to write to root filesystem
+      readonly_root_filesystem = false
+      memory_reservation       = 100
+    }
   }
 
   load_balancer = {
     service = {
       target_group_arn = element(module.alb.target_group_arns, 0)
-      container_name   = local.container_name
+      container_name   = local.name
       container_port   = local.container_port
     }
   }
@@ -137,6 +166,6 @@ module "ecs_service" {
     }
   }
 
-  tags = local.tags
-  propagate_tags                 = "TASK_DEFINITION"
+  tags           = local.tags
+  propagate_tags = "TASK_DEFINITION"
 }

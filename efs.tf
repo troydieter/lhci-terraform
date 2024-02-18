@@ -2,8 +2,8 @@ module "efs" {
   source = "terraform-aws-modules/efs/aws"
 
   # File system
-  name           = "efs-${local.name}"
-  encrypted      = true
+  name      = "efs-${local.name}"
+  encrypted = true
 
   lifecycle_policy = {
     transition_to_ia = "AFTER_30_DAYS"
@@ -14,7 +14,7 @@ module "efs" {
   bypass_policy_lockout_safety_check = false
 
   # Mount targets / security group
-    mount_targets = {
+  mount_targets = {
     "${local.region}a" = {
       subnet_id = module.vpc.private_subnets[0]
     }
