@@ -33,6 +33,13 @@ module "efs" {
       description = "NFS ingress from VPC private subnets"
       cidr_blocks = [module.vpc.vpc_cidr_block]
     }
+    efs = {
+      type        = "egress"
+      from_port   = 2049
+      to_port     = 2049
+      protocol    = "tcp"
+      cidr_blocks = [module.vpc.vpc_cidr_block]
+    }
   }
 
   # Backup policy

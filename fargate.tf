@@ -103,14 +103,6 @@ module "ecs_service" {
   }
 
   create_tasks_iam_role = true
-  # tasks_iam_role_statements = [
-  #   {
-  #     actions   = ["s3:PutObject"]
-  #     effect    = "Allow"
-  #     resources = ["arn:aws:s3:::xxx"]
-  #     sid       = "S3"
-  #   }
-  # ]
 
   load_balancer = {
     service = {
