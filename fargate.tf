@@ -74,7 +74,7 @@ module "ecs_service" {
   }
 
   container_definitions = {
-    "test" = {
+    "lhci" = {
       name      = local.name
       service   = local.name
       cpu       = 512
@@ -101,6 +101,16 @@ module "ecs_service" {
       memory_reservation       = 100
     }
   }
+
+  create_tasks_iam_role = true
+  # tasks_iam_role_statements = [
+  #   {
+  #     actions   = ["s3:PutObject"]
+  #     effect    = "Allow"
+  #     resources = ["arn:aws:s3:::xxx"]
+  #     sid       = "S3"
+  #   }
+  # ]
 
   load_balancer = {
     service = {
