@@ -111,7 +111,7 @@ module "ecs_service" {
   # }
 
   container_definitions = {
-    (local.name) = {
+    "test" = {
       name      = local.name
       service   = local.name
       cpu       = 512
